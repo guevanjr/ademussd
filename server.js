@@ -18,8 +18,10 @@ app.post('*', (req, res) => {
   let clientID = ''
   let parClient = ''
 
-  const result = request('http://localhost:4000/users/'.concat(phoneNumber.replace('+', '')), function (error, resp, body) {
-      clientID = body.substring(body.indexOf(':', 1)+1, body.indexOf(',', body.indexOf(':', 1)+1));
+  const result = request('https://41.223.153.252:4000/users/'.concat(phoneNumber.replace('+', '')), function (error, resp, body) {
+      console.log(error)
+      console.log(resp)
+      //clientID = body.substring(body.indexOf(':', 1)+1, body.indexOf(',', body.indexOf(':', 1)+1));
 
     if (resp.statusCode == 200) {
         let txtCheck = text.split('*')
@@ -51,7 +53,7 @@ app.post('*', (req, res) => {
       
             res.send(response)
           } else if (text == '1*1' || text.endsWith('*9*1*1')) {
-            request('http://localhost:4000/invoices/1/'.concat(clientID), function (errorInv, resInv, bodyInv) {
+            request('http://41.223.153.252:4000/invoices/1/'.concat(clientID), function (errorInv, resInv, bodyInv) {
 
                 if (resInv.statusCode == 200) {
                     response = `END Factura Corrente
@@ -78,7 +80,7 @@ app.post('*', (req, res) => {
             clientID = text.substring(6, text.length);
             console.log(clientID);
 
-            request('http://localhost:4000/invoices/1/'.concat(clientID), function (errorInv, resInv, bodyInv) {
+            request('http://41.223.153.252:4000/invoices/1/'.concat(clientID), function (errorInv, resInv, bodyInv) {
 
                 if (resInv.statusCode == 200) {
                     response = `END Factura Corrente
@@ -97,7 +99,7 @@ app.post('*', (req, res) => {
         } else if (text == '1*2' || text.endsWith('*9*1*2')) {
             //Business logic for the second level response
             //Fetch Open Invoices for the ClientID
-            request('http://localhost:4000/invoices/5/'.concat(clientID), function (errorInv, resInv, bodyInv) {
+            request('http://41.223.153.252:4000/invoices/5/'.concat(clientID), function (errorInv, resInv, bodyInv) {
                 const data = bodyInv
 
                 if (resInv.statusCode == 200) {
@@ -125,7 +127,7 @@ app.post('*', (req, res) => {
             clientID = text.substring(6, text.length);
             console.log(clientID);
             
-            request('http://localhost:4000/invoices/5/'.concat(clientID), function (errorInv, resInv, bodyInv) {
+            request('http://41.223.153.252:4000/invoices/5/'.concat(clientID), function (errorInv, resInv, bodyInv) {
 
                 if (resInv.statusCode == 200) {
                     response = `END Factura Corrente
@@ -144,7 +146,7 @@ app.post('*', (req, res) => {
       } else if (text == '1*3' || text.endsWith('*9*1*3')) {
             //Business logic for the second level response
             //Fetch current Invoice for the user's ClientID
-            request('http://localhost:4000/invoices/bal/'.concat(clientID), function (errorInv, resInv, bodyInv) {
+            request('http://41.223.153.252:4000/invoices/bal/'.concat(clientID), function (errorInv, resInv, bodyInv) {
 
                 if (resInv.statusCode == 200) {
                     response = `END O seu saldo é de :                     
@@ -168,7 +170,7 @@ app.post('*', (req, res) => {
       } else if (text.startsWith('1*3*2*') /*|| text.endsWith('*9*1*3*2')*/) {  
             //Fetch current Invoice for the user's ClientID
             clientID = text.substring(6, text.length);
-            request('http://localhost:4000/invoices/bal/'.concat(clientID), function (errorInv, resInv, bodyInv) {
+            request('http://41.223.153.252:4000/invoices/bal/'.concat(clientID), function (errorInv, resInv, bodyInv) {
 
                 if (resInv.statusCode == 200) {
                     response = `END O saldo do cliente `.concat(clientID, ' é: \n\r', bodyInv, '\n\rObrigado!')
@@ -231,7 +233,7 @@ app.post('*', (req, res) => {
             let value = text.substring(4, text.length);
             let options = {
                 'method': 'POST',
-                'url': 'http://localhost:4000/readings/',
+                'url': 'http://41.223.153.252:4000/readings/',
                 'headers': {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -271,7 +273,7 @@ app.post('*', (req, res) => {
             let value = txtCheck[3]; //text.substring(4, text.length);
             let options = {
                 'method': 'POST',
-                'url': 'http://localhost:4000/readings/',
+                'url': 'http://41.223.153.252:4000/readings/',
                 'headers': {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -318,7 +320,7 @@ app.post('*', (req, res) => {
             0. Sair`
             res.send(response)
         } else if (text == '6*1' || text.endsWith('*9*6*1')) {
-            request('http://192.168.30.248/api/getCoupon?clientNumber='.concat(clientID), function (errorInv, resInv, bodyInv) {
+        /*    request('http://192.168.30.248/api/getCoupon?clientNumber='.concat(clientID), function (errorInv, resInv, bodyInv) {
 
                 if (resInv.statusCode == 200) {
                   let apiResult = JSON.parse(bodyInv)
@@ -343,9 +345,24 @@ app.post('*', (req, res) => {
                 } else {
 
                 }
-            });                    
+            }); */
+            request('http://41.223.153.252:4000/promotions/'.concat(clientID), function (errorInv, resInv, bodyInv) {
+                res.send(bodyInv)
+                /*if (resInv.statusCode == 200) {
+                    response = `END O saldo do cliente `.concat(clientID, ' é: \n\r', bodyInv, '\n\rObrigado!')
+                    res.send(response)
+                } else if (resInv.statusCode == 404) {
+                    response = `END Ocorreu um erro com o seu pedido.
+                    Por favor, tente mais tarde.`
+
+                    res.send(response)
+                } else {
+
+                }*/
+            });    
+
         } else if (text == '6*2' || text.endsWith('*9*6*2')) {
-            request('http://192.168.30.248/api/getWinCoupon', function (errorInv, resInv, bodyInv) {
+            /*request('http://192.168.30.248/api/getWinCoupon', function (errorInv, resInv, bodyInv) {
 
                 if (resInv.statusCode == 200) {
                   //let i = 0
@@ -371,7 +388,22 @@ app.post('*', (req, res) => {
                 } else {
 
                 }
-            });                    
+            });*/   
+            request('http://41.223.153.252:4000/promotions/', function (errorInv, resInv, bodyInv) {
+                res.send(bodyInv)
+            /*    if (resInv.statusCode == 200) {
+                    response = `END O saldo do cliente `.concat(clientID, ' é: \n\r', bodyInv, '\n\rObrigado!')
+                    res.send(response)
+                } else if (resInv.statusCode == 404) {
+                    response = `END Ocorreu um erro com o seu pedido.
+                    Por favor, tente mais tarde.`
+
+                    res.send(response)
+                } else {
+
+                }*/
+            });    
+
         } else if (text.endsWith('*0')) {
             //Business logic for the second level response
             response = `END Obrigado por usar o nosso serviço! 
@@ -587,13 +619,13 @@ app.post('*', (req, res) => {
             console.log('Entidade: ' + parEntity);
             let bitFound = 0;
 
-            request('http://localhost:4000/clients/'.concat(clientID, '/', entityID), function (errCli, resCli, bodyCli) {
+            request('http://41.223.153.252:4000/clients/'.concat(clientID, '/', entityID), function (errCli, resCli, bodyCli) {
                 console.log(resCli.statusCode);
 
                 if (!errCli && resCli.statusCode == 200) {
                     let options = {
                         'method': 'POST',
-                        'url': 'http://localhost:4000/users/',
+                        'url': 'http://41.223.153.252:4000/users/',
                         'headers': {
                           'Content-Type': 'application/x-www-form-urlencoded'
                         },
