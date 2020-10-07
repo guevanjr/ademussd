@@ -13,12 +13,32 @@ app.get('*', (req, res) => {
   res.send('This is the Alpha version of the USSD Application for AdeM')
 })
 
+/*
+const openvpnmanager = require('node-openvpn');
+
+const opts = {
+  host: 'localhost',
+  port: 4000,
+  timeout: 1500, //timeout for connection - optional, will default to 1500ms if undefined
+  logpath: 'log.txt' //optional write openvpn console output to file, can be relative path or absolute
+};/*
+const auth = {
+  user: '{{add user name}}',
+  pass: '9c359ad1ebeec200',
+};
+const openvpn = openvpnmanager.connect(opts)
+
+
+ openvpn.on('connected', () => {
+   console.log("Connected to VPN successfully...");
+ });
+*/
 app.post('*', (req, res) => {
   let {sessionId, serviceCode, phoneNumber, text} = req.body
   let clientID = ''
   let parClient = ''
 
-  const result = request('https://41.223.153.252:4000/users/'.concat(phoneNumber.replace('+', '')), function (error, resp, body) {
+  const result = request('https://localhost:4000/users/'.concat(phoneNumber.replace('+', '')), function (error, resp, body) {
       console.log(error)
       console.log(resp)
       //clientID = body.substring(body.indexOf(':', 1)+1, body.indexOf(',', body.indexOf(':', 1)+1));
@@ -53,7 +73,7 @@ app.post('*', (req, res) => {
       
             res.send(response)
           } else if (text == '1*1' || text.endsWith('*9*1*1')) {
-            request('http://41.223.153.252:4000/invoices/1/'.concat(clientID), function (errorInv, resInv, bodyInv) {
+            request('http://localhost:4000/invoices/1/'.concat(clientID), function (errorInv, resInv, bodyInv) {
 
                 if (resInv.statusCode == 200) {
                     response = `END Factura Corrente
@@ -80,7 +100,7 @@ app.post('*', (req, res) => {
             clientID = text.substring(6, text.length);
             console.log(clientID);
 
-            request('http://41.223.153.252:4000/invoices/1/'.concat(clientID), function (errorInv, resInv, bodyInv) {
+            request('http://localhost:4000/invoices/1/'.concat(clientID), function (errorInv, resInv, bodyInv) {
 
                 if (resInv.statusCode == 200) {
                     response = `END Factura Corrente
@@ -99,7 +119,7 @@ app.post('*', (req, res) => {
         } else if (text == '1*2' || text.endsWith('*9*1*2')) {
             //Business logic for the second level response
             //Fetch Open Invoices for the ClientID
-            request('http://41.223.153.252:4000/invoices/5/'.concat(clientID), function (errorInv, resInv, bodyInv) {
+            request('http://localhost:4000/invoices/5/'.concat(clientID), function (errorInv, resInv, bodyInv) {
                 const data = bodyInv
 
                 if (resInv.statusCode == 200) {
@@ -127,7 +147,7 @@ app.post('*', (req, res) => {
             clientID = text.substring(6, text.length);
             console.log(clientID);
             
-            request('http://41.223.153.252:4000/invoices/5/'.concat(clientID), function (errorInv, resInv, bodyInv) {
+            request('http://localhost:4000/invoices/5/'.concat(clientID), function (errorInv, resInv, bodyInv) {
 
                 if (resInv.statusCode == 200) {
                     response = `END Factura Corrente
@@ -146,7 +166,7 @@ app.post('*', (req, res) => {
       } else if (text == '1*3' || text.endsWith('*9*1*3')) {
             //Business logic for the second level response
             //Fetch current Invoice for the user's ClientID
-            request('http://41.223.153.252:4000/invoices/bal/'.concat(clientID), function (errorInv, resInv, bodyInv) {
+            request('http://localhost:4000/invoices/bal/'.concat(clientID), function (errorInv, resInv, bodyInv) {
 
                 if (resInv.statusCode == 200) {
                     response = `END O seu saldo é de :                     
@@ -170,7 +190,7 @@ app.post('*', (req, res) => {
       } else if (text.startsWith('1*3*2*') /*|| text.endsWith('*9*1*3*2')*/) {  
             //Fetch current Invoice for the user's ClientID
             clientID = text.substring(6, text.length);
-            request('http://41.223.153.252:4000/invoices/bal/'.concat(clientID), function (errorInv, resInv, bodyInv) {
+            request('http://localhost:4000/invoices/bal/'.concat(clientID), function (errorInv, resInv, bodyInv) {
 
                 if (resInv.statusCode == 200) {
                     response = `END O saldo do cliente `.concat(clientID, ' é: \n\r', bodyInv, '\n\rObrigado!')
@@ -233,7 +253,7 @@ app.post('*', (req, res) => {
             let value = text.substring(4, text.length);
             let options = {
                 'method': 'POST',
-                'url': 'http://41.223.153.252:4000/readings/',
+                'url': 'http://localhost:4000/readings/',
                 'headers': {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -273,7 +293,7 @@ app.post('*', (req, res) => {
             let value = txtCheck[3]; //text.substring(4, text.length);
             let options = {
                 'method': 'POST',
-                'url': 'http://41.223.153.252:4000/readings/',
+                'url': 'http://localhost:4000/readings/',
                 'headers': {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -346,7 +366,7 @@ app.post('*', (req, res) => {
 
                 }
             }); */
-            request('http://41.223.153.252:4000/promotions/'.concat(clientID), function (errorInv, resInv, bodyInv) {
+            request('http://localhost:4000/promotions/'.concat(clientID), function (errorInv, resInv, bodyInv) {
                 res.send(bodyInv)
                 /*if (resInv.statusCode == 200) {
                     response = `END O saldo do cliente `.concat(clientID, ' é: \n\r', bodyInv, '\n\rObrigado!')
@@ -389,7 +409,7 @@ app.post('*', (req, res) => {
 
                 }
             });*/   
-            request('http://41.223.153.252:4000/promotions/', function (errorInv, resInv, bodyInv) {
+            request('http://localhost:4000/promotions/', function (errorInv, resInv, bodyInv) {
                 res.send(bodyInv)
             /*    if (resInv.statusCode == 200) {
                     response = `END O saldo do cliente `.concat(clientID, ' é: \n\r', bodyInv, '\n\rObrigado!')
@@ -619,13 +639,13 @@ app.post('*', (req, res) => {
             console.log('Entidade: ' + parEntity);
             let bitFound = 0;
 
-            request('http://41.223.153.252:4000/clients/'.concat(clientID, '/', entityID), function (errCli, resCli, bodyCli) {
+            request('http://localhost:4000/clients/'.concat(clientID, '/', entityID), function (errCli, resCli, bodyCli) {
                 console.log(resCli.statusCode);
 
                 if (!errCli && resCli.statusCode == 200) {
                     let options = {
                         'method': 'POST',
-                        'url': 'http://41.223.153.252:4000/users/',
+                        'url': 'http://localhost:4000/users/',
                         'headers': {
                           'Content-Type': 'application/x-www-form-urlencoded'
                         },
